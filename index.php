@@ -33,11 +33,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 echo "<script>alert('The record was not inserted successfully.');</script>";
             }
         } else {
-            echo "<script>alert('Note Title and Description cannot be empty.');</script>";
+            echo "<div class='alert alert-danger alert-dismissible fade show' role='alert'>
+            <strong>Warning! </strong>Note Title and Description cannot be empty.<button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+            <span aria-hidden='true'>×</span>
+          </button>
+        </div>";
         }
-    } else {
-        echo "<script>alert('Note Title and Description are required.');</script>";
-    }
+     } 
+    // else {
+    //     echo "<script>alert('Note Title and Description are required.');</script>";
+    // }
 }
 
 if (isset($_GET['delete'])) {
