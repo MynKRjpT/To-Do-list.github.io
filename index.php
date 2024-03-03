@@ -19,8 +19,9 @@ if (!$conn){
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['title']) && isset($_POST['description'])) {
-        $title = $_POST["title"];
-        $description = $_POST["description"];
+        // Prevent double encoding before insertion
+        $title = htmlspecialchars($_POST["title"]);
+        $description = htmlspecialchars($_POST["description"]);
 
         if (!empty($title) && !empty($description)) {
             // Sql query to be executed
@@ -40,9 +41,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>";
         }
      } 
-    // else {
-    //     echo "<script>alert('Note Title and Description are required.');</script>";
-    // }
 }
 
 if (isset($_GET['delete'])) {
@@ -60,8 +58,12 @@ if (isset($_GET['delete'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['snoEdit'])) {
     // Update the record
     $sno = $_POST["snoEdit"];
+    $sno = str_replace("<", "&gt;", $sno);
+    $sno = str_replace(">", "&lt;", $sno);
     $title = $_POST["titleEdit"];
+    $title = htmlspecialchars($title); // Prevent double encoding
     $description = $_POST["descriptionEdit"];
+    $description = htmlspecialchars($description); // Prevent double encoding
 
     // Sql query to be executed
     $sql = "UPDATE `to-do-list` SET `title` = '$title' , `description` = '$description' WHERE `sno` = $sno";
@@ -103,9 +105,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['snoEdit'])) {
         /* height: 100vh;  */
         /* Optionally, you can add more styles like background color, etc. */
     }
+
     .head-items {
-    color: red;
-  }
+        color: red;
+    }
     </style>
 </head>
 
@@ -221,30 +224,17 @@ if($update){
             </thead>
             <tbody>
                 <?php 
-        // Connect to the Database 
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $database = "notes";
-
-        // Create a connection
-        $conn = mysqli_connect($servername, $username, $password, $database);
-
-        // Die if connection was not successful
-        if (!$conn){
-            die("Sorry we failed to connect: ". mysqli_connect_error());
-        }
-
         $sql = "SELECT * FROM `to-do-list`";
         $result = mysqli_query($conn, $sql);
         $sno = 1;
         while($row = mysqli_fetch_assoc($result)){
             echo "<tr>
-            <th scope='row'>". $sno . "</th>
-            <td>". $row['title'] . "</td>
-            <td>". $row['description'] . "</td>
-            <td> <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> <button class='delete btn btn-sm btn-primary' id=d".$row['sno'].">Delete</button>  </td>
-          </tr>";
+    <th scope='row'>". $sno . "</th>
+    <td>". $row['title'] . "</td>
+    <td>". $row['description'] . "</td>
+    <td> <button class='edit btn btn-sm btn-primary' id=".$row['sno'].">Edit</button> <button class='delete btn btn-sm btn-primary' id=d".$row['sno'].">Delete</button>  </td>
+    </tr>";
+
           $sno++;
         } 
         ?>
